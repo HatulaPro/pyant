@@ -14,4 +14,7 @@ for i in range(c.width * c.height):
     c.get_pixel(x, y).character = 'X'
     if random.randint(0, 50) == 25:
         c.background(random.choice([Pixel.hex_to_xterm_color(0x00ff00), Pixel.hex_to_xterm_color(0xff0000), Pixel.hex_to_xterm_color(0x0000ff)]))
+
+    if random.randint(0, 200) == 25:
+        c.set_all_pixels(Pixel(' ', Pixel.hex_to_xterm_color(0x00ff00), Pixel.hex_to_xterm_color(0x0d0dff)))
     c.draw()

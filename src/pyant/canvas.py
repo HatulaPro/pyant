@@ -103,6 +103,12 @@ class Canvas:
         for pixel in self._pixels:
             pixel.background = color
 
+    def set_all_pixels(self, pixel: Pixel) -> None:
+        for p in self._pixels:
+            p.background = pixel.background
+            p.foreground = pixel.foreground
+            p._character = pixel.character
+
     @staticmethod
     def _save_cursor_position() -> None:
         sys.stdout.write('\33[s')
