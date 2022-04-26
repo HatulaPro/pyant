@@ -99,6 +99,10 @@ class Canvas:
     def set_pixel(self, value: Pixel, x: int, y: int) -> None:
         self._pixels[y * self.width + x] = value
 
+    def background(self, color: int) -> None:
+        for pixel in self._pixels:
+            pixel.background = color
+
     @staticmethod
     def _save_cursor_position() -> None:
         sys.stdout.write('\33[s')
