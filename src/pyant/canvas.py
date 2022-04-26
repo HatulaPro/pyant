@@ -67,6 +67,19 @@ class Canvas:
 
         self._clear_on_finish = clear_on_finish
 
+    @property
+    def fps(self) -> bool:
+        return self._fps
+
+    @fps.setter
+    def fps(self, fps: bool) -> None:
+        if not isinstance(fps, int):
+            raise TypeError('New FPS must be an integer.')
+        if fps < 1:
+            raise TypeError('New FPS must be greater than or equal to one.')
+
+        self._fps = fps
+
     def __del__(self) -> None:
         Canvas._show_cursor()
         if(self.clear_on_finish):

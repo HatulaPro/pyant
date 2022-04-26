@@ -2,6 +2,7 @@ import random
 from pyant import Canvas
 
 c = Canvas(40, 10)
+c.clear_on_finish = False
 
 for i in range(c.width * c.height):
     x = random.randint(0, c.width - 1)
