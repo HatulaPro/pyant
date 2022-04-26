@@ -5,3 +5,4 @@ if sys.platform != "linux" and sys.platform != "linux2":
     exit(1)
 
 from .canvas import Canvas, TERMINAL_DIMENSIONS
+from .pixel import Pixel
