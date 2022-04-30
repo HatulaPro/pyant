@@ -1,8 +1,8 @@
 import os
 import sys
+import threading
 import time
-from tkinter import W
-
+from pyant.input import getch, reset_terminal
 from pyant.pixel import Pixel
 
 TERMINAL_DIMENSIONS = os.get_terminal_size()
@@ -14,13 +14,21 @@ class Canvas:
     _pixels: list[Pixel]
     _fps: int
     _clear_on_finish: bool
+    _done: bool
+
+    _click_listeners: dict
 
     def __init__(self, width: int, height: int) -> None:
         self.width = width
         self.height = height
         self._pixels = [Pixel(' ', Pixel.hex_to_xterm_color(0x000000), Pixel.hex_to_xterm_color(0xffffff)) for _ in range(width * height)]
         self._fps = 60
-        self.clear_on_finish = True
+        self._clear_on_finish = True
+        self._done = False
+
+        self._click_listeners = {}
+        self._begin_click_listener()
+
         Canvas._hide_cursor()
         Canvas._save_cursor_position()
 
@@ -81,23 +89,32 @@ class Canvas:
         self._fps = fps
 
     def __del__(self) -> None:
-        Canvas._show_cursor()
-        if(self.clear_on_finish):
+        if self._clear_on_finish:
             Canvas._restore_cursor_position()
+        self._done = True
+
+    @staticmethod
+    def quit():
+        reset_terminal()
+        os._exit(0)
 
     def draw(self) -> None:
         Canvas._restore_cursor_position()
         for i in range(self.height):
             for j in range(self.width):
                 sys.stdout.write(self._pixels[i * self.width + j]._get_show_string())
-            sys.stdout.write('\n')
+            sys.stdout.write('\r\n')
         time.sleep(1 / self._fps)
 
     def get_pixel(self, x: int, y: int) -> Pixel:
         return self._pixels[y * self.width + x]
 
-    def set_pixel(self, value: Pixel, x: int, y: int) -> None:
-        self._pixels[y * self.width + x] = value
+    def set_pixel(self, x: int, y: int, value: Pixel, square_mode: bool = False) -> None:
+        if square_mode:
+            self._pixels[y * self.width + (x * 2)] = value
+            self._pixels[y * self.width + (x * 2 + 1)] = value
+        else:
+            self._pixels[y * self.width + x] = value
 
     def background(self, color: int) -> None:
         for pixel in self._pixels:
@@ -108,6 +125,24 @@ class Canvas:
             p.background = pixel.background
             p.foreground = pixel.foreground
             p._character = pixel.character
+
+    def _begin_click_listener(self) -> None:
+
+        def click_listener(self: Canvas) -> None:
+            while not self._done:
+                x = getch()
+                if x in self._click_listeners:
+                    self._click_listeners[x](self)
+                if x == '\x03':
+                    print('^C')
+                    Canvas.quit()
+
+        t = threading.Thread(target=click_listener, name='click listener', args=(self, ))
+        t.daemon = True
+        t.start()
+
+    def on_click(self, key, func) -> None:
+        self._click_listeners[key] = func
 
     @staticmethod
     def _save_cursor_position() -> None:
