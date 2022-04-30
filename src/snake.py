@@ -8,7 +8,11 @@ DOWN = 1
 LEFT = 2
 RIGHT = 3
 
-c = Canvas(32, 16)
+try:
+    c = Canvas(32, 16)
+except Exception as e:
+    print(e)
+    Canvas.quit()
 # c.clear_on_finish = False
 c.fps = 4
 
@@ -72,7 +76,7 @@ c.on_click('d', move_right)
 
 while not c._done:
     head = snake[-1]
-    c.set_all_pixels(Pixel(' ', Pixel.hex_to_xterm_color(0x00ff00), Pixel.hex_to_xterm_color(0x40ff60)))
+    c.set_all_pixels(Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0x40ff60)))
 
     head_x, head_y = head
     lock_changes = True
@@ -92,7 +96,9 @@ while not c._done:
     if new_head_x == treat[0] and new_head_y == treat[1]:
         snake.append([treat[0], treat[1]])
         retreat()
+        continue
     else:
+        print(new_head_x, new_head_y, treat)
         for i in range(len(snake) - 1):
             snake[i][0], snake[i][1] = snake[i + 1]
             if new_head_x == snake[i][0] and new_head_y == snake[i][1]:
@@ -106,8 +112,8 @@ while not c._done:
         Canvas.quit()
 
     for [x, y] in snake[:-1]:
-        c.set_pixel(x, y, Pixel(' ', Pixel.hex_to_xterm_color(0x00ff00), Pixel.hex_to_xterm_color(0xf5e642)), square_mode=True)
-    c.set_pixel(new_head_x, new_head_y, Pixel(' ', Pixel.hex_to_xterm_color(0x00ff00), Pixel.hex_to_xterm_color(0xffae21)), square_mode=True)
+        c.set_pixel(x, y, Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xf5e642)), square_mode=True)
+    c.set_pixel(new_head_x, new_head_y, Pixel('-', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xffae21)), square_mode=True)
 
-    c.set_pixel(treat[0], treat[1], Pixel(' ', Pixel.hex_to_xterm_color(0x00ff00), Pixel.hex_to_xterm_color(0xff0000)), square_mode=True)
+    c.set_pixel(treat[0], treat[1], Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xff0000)), square_mode=True)
     c.draw()

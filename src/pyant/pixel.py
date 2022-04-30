@@ -56,5 +56,9 @@ class Pixel:
         return f'\033[38;5;{self.foreground}m\033[48;5;{self.background}m{self.character}\033[m'
 
     @staticmethod
-    def hex_to_xterm_color(hex_color: int):
+    def hex_to_xterm_color(hex_color: int) -> int:
         return xtermcolor.ColorMap.XTermColorMap().convert(hex_color)[0]
+
+    @staticmethod
+    def empty_color() -> int:
+        return Pixel.hex_to_xterm_color(0xffffff)
