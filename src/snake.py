@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-import os
 import random
 from pyant import Canvas, Pixel
-from pyant.input import Keys
+from pyant import Keys
 
 UP = 0
 DOWN = 1
@@ -90,7 +89,7 @@ c.on_click(Keys.DOWN_KEY, move_down)
 c.on_click('w', move_up)
 c.on_click(Keys.UP_KEY, move_up)
 c.on_click('d', move_right)
-c.on_click(Keys.DOWN_KEY, move_right)
+c.on_click(Keys.RIGHT_KEY, move_right)
 
 
 while not c._done:
