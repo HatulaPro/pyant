@@ -23,23 +23,23 @@ class Keys(Enum):
 def getch():
     try:
         tty.setraw(fd)
-        ch = sys.stdin.read(1)
+        ch = sys.stdin.buffer.read(1)
 
-        if ch == '\x1b':
-            arrow = ch + sys.stdin.read(2)
-            if arrow == '\x1b[A':
+        if ch == b'\x1b':
+            arrow = sys.stdin.buffer.read(2)
+            if arrow == b'[A':
                 return Keys.UP_KEY
-            elif arrow == '\x1b[B':
+            elif arrow == b'[B':
                 return Keys.DOWN_KEY
-            elif arrow == '\x1b[C':
+            elif arrow == b'[C':
                 return Keys.RIGHT_KEY
-            elif arrow == '\x1b[D':
+            elif arrow == b'[D':
                 return Keys.LEFT_KEY
-        if ch == '\r':
+        if ch == b'\r':
             return Keys.ENTER
     except:
         return ''
     finally:
         reset_terminal()
 
-    return ch
+    return ch.decode()

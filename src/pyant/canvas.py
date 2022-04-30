@@ -142,6 +142,8 @@ class Canvas:
         def click_listener(self: Canvas) -> None:
             while not self._done:
                 x = getch()
+                print(x)
+                print(self._click_listeners)
                 if x in self._click_listeners:
                     self._click_listeners[x](self)
                 if x == '\x03':
