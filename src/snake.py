@@ -96,9 +96,7 @@ while not c._done:
     if new_head_x == treat[0] and new_head_y == treat[1]:
         snake.append([treat[0], treat[1]])
         retreat()
-        continue
     else:
-        print(new_head_x, new_head_y, treat)
         for i in range(len(snake) - 1):
             snake[i][0], snake[i][1] = snake[i + 1]
             if new_head_x == snake[i][0] and new_head_y == snake[i][1]:
@@ -113,7 +111,7 @@ while not c._done:
 
     for [x, y] in snake[:-1]:
         c.set_pixel(x, y, Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xf5e642)), square_mode=True)
-    c.set_pixel(new_head_x, new_head_y, Pixel('-', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xffae21)), square_mode=True)
+    c.set_pixel(new_head_x, new_head_y, Pixel('^', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xffae21)), square_mode=True)
 
     c.set_pixel(treat[0], treat[1], Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xff0000)), square_mode=True)
     c.draw()
