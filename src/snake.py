@@ -116,12 +116,14 @@ while not c._done:
     for i in range(len(snake) - 1):
         snake[i][0], snake[i][1] = snake[i + 1]
         if new_head_x == snake[i][0] and new_head_y == snake[i][1]:
+            print('GG loser')
             Canvas.quit()
     snake[-2] = [head_x, head_y]
     snake[-1] = [new_head_x, new_head_y]
 
     # If snake is out of bounds
     if new_head_x < 0 or new_head_x * 2 >= c.width or new_head_y < 0 or new_head_y >= c.height:
+        print('GG loser')
         Canvas.quit()
 
     # Putting the snake's pixels on the canvas
