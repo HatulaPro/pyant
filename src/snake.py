@@ -18,12 +18,15 @@ c.fps = 4
 
 snake = [[1, 1], [1, 2], [1, 3]]
 treat = [0, 0]
+score = -1
 
 
 def retreat():
     global treat
-    treat[0] = random.randint(0, c.width / 2)
-    treat[1] = random.randint(0, c.height)
+    global score
+    score += 1
+    treat[0] = random.randint(0, c.width / 2 - 1)
+    treat[1] = random.randint(0, c.height - 1)
 
 
 retreat()
@@ -93,16 +96,16 @@ while not c._done:
     elif moving_direction == LEFT:
         new_head_x -= 1
 
-    if new_head_x == treat[0] and new_head_y == treat[1]:
-        snake.append([treat[0], treat[1]])
-        retreat()
-    else:
-        for i in range(len(snake) - 1):
-            snake[i][0], snake[i][1] = snake[i + 1]
-            if new_head_x == snake[i][0] and new_head_y == snake[i][1]:
-                Canvas.quit()
-        snake[-2] = [head_x, head_y]
-        snake[-1] = [new_head_x, new_head_y]
+    # if new_head_x == treat[0] and new_head_y == treat[1]:
+    #     snake.append([treat[0], treat[1]])
+    #     retreat()
+    # else:
+    for i in range(len(snake) - 1):
+        snake[i][0], snake[i][1] = snake[i + 1]
+        if new_head_x == snake[i][0] and new_head_y == snake[i][1]:
+            Canvas.quit()
+    snake[-2] = [head_x, head_y]
+    snake[-1] = [new_head_x, new_head_y]
 
     lock_changes = False
 
@@ -113,5 +116,12 @@ while not c._done:
         c.set_pixel(x, y, Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xf5e642)), square_mode=True)
     c.set_pixel(new_head_x, new_head_y, Pixel('^', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xffae21)), square_mode=True)
 
-    c.set_pixel(treat[0], treat[1], Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xff0000)), square_mode=True)
+    if new_head_x == treat[0] and new_head_y == treat[1]:
+        snake.append([treat[0], treat[1]])
+        retreat()
+    else:
+        c.set_pixel(treat[0], treat[1], Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xff0000)), square_mode=True)
+
+    title = f'score: {score}'
+    c.text(title, int((c.width - len(title)) / 2), 0, foreground=Pixel.hex_to_xterm_color(0x000000))
     c.draw()

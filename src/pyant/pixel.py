@@ -16,6 +16,9 @@ class Pixel:
         self.foreground = foreground
         self.background = background
 
+    def copy(self) -> 'Pixel':
+        return Pixel(self.character, self.foreground, self.background)
+
     @property
     def character(self) -> str:
         return self._character

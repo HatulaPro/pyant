@@ -88,6 +88,17 @@ class Canvas:
 
         self._fps = fps
 
+    def text(self, content: str, x: int, y: int, foreground: int = -1, background: int = -1) -> None:
+        if x + len(content) > self.width:
+            raise ValueError('Content is too long, can not show on canvas.')
+        for i in range(len(content)):
+            pixel = self.get_pixel(x + i, y)
+            if foreground != -1:
+                pixel.foreground = foreground
+            if background != -1:
+                pixel.background = background
+            pixel.character = content[i]
+
     def __del__(self) -> None:
         if self._clear_on_finish:
             Canvas._restore_cursor_position()
@@ -111,10 +122,10 @@ class Canvas:
 
     def set_pixel(self, x: int, y: int, value: Pixel, square_mode: bool = False) -> None:
         if square_mode:
-            self._pixels[y * self.width + (x * 2)] = value
-            self._pixels[y * self.width + (x * 2 + 1)] = value
+            self._pixels[y * self.width + (x * 2)] = value.copy()
+            self._pixels[y * self.width + (x * 2 + 1)] = value.copy()
         else:
-            self._pixels[y * self.width + x] = value
+            self._pixels[y * self.width + x] = value.copy()
 
     def background(self, color: int) -> None:
         for pixel in self._pixels:
