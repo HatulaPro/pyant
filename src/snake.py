@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from enum import IntEnum, auto
 import random
 from pyant import Canvas, Pixel, Keys
 
@@ -53,11 +54,6 @@ def move_down(c: Canvas):
         moving_direction = DOWN
 
 
-# Global variables
-snake = []
-treat = [0, 0]
-score = -1
-
 # Making sure there is enough place for the canvas
 try:
     c = Canvas(32, 16)
@@ -66,21 +62,23 @@ except Exception as e:
     Canvas.quit()
 
 
-def retreat():
+TREAT = 0
+SNAKE = 1
+SCORE = 2
+
+
+def retreat(self: Canvas):
     '''
     A Function to be called anytime we create the treat
     '''
-    global treat
-    global score
-    score += 1
-    treat[0] = random.randint(0, c.width / 2 - 1)
-    treat[1] = random.randint(0, c.height - 1)
+    self.vars[SCORE] += 1
+    self.vars[TREAT][0] = random.randint(0, c.width / 2 - 1)
+    self.vars[TREAT][1] = random.randint(0, c.height - 1)
 
 
 # Setting up the listeners
 # Using both the arrow keys and WASD
 def setup(self: Canvas):
-    global snake
     self.fps = 4
 
     self.on_click('a', move_left)
@@ -91,15 +89,26 @@ def setup(self: Canvas):
     self.on_click(Keys.UP_KEY, move_up)
     self.on_click('d', move_right)
     self.on_click(Keys.RIGHT_KEY, move_right)
+
     # Initial snake state
-    snake = [[1, 1], [1, 2], [1, 3]]
-    retreat()
+    # self.vars
+    self.vars[SNAKE] = [[1, 1], [1, 2], [1, 3]]
+    self.vars[TREAT] = [0, 0]
+    self.vars[SCORE] = -1
+
+    retreat(self)
 
 
 def draw(self: Canvas):
     global lock_changes
+
     # Recoloring the background every frame
     self.set_all_pixels(Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0x40ff60)))
+
+    snake = self.vars[SNAKE]
+    treat = self.vars[TREAT]
+    score = self.vars[SCORE]
+
     head = snake[-1]
 
     head_x, head_y = head
@@ -141,7 +150,7 @@ def draw(self: Canvas):
     if new_head_x == treat[0] and new_head_y == treat[1]:
         # Add the treat to the snake
         snake.append([treat[0], treat[1]])
-        retreat()
+        retreat(self)
     else:
         # Show the treat if it wasn't eaten
         self.set_pixel(treat[0], treat[1], Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xff0000)), square_mode=True)

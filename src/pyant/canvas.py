@@ -16,6 +16,7 @@ class Canvas:
     _fps: int
     _clear_on_finish: bool
     _done: bool
+    vars: dict
 
     _click_listeners: dict
 
@@ -26,7 +27,7 @@ class Canvas:
         self._fps = 60
         self._clear_on_finish = True
         self._done = False
-
+        self.vars = {}
         self._click_listeners = {}
         self._begin_click_listener()
 
