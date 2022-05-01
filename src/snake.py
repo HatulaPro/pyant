@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from enum import IntEnum, auto
 import random
 from pyant import Canvas, Pixel, Keys
 
@@ -56,7 +55,7 @@ def move_down(c: Canvas):
 
 # Making sure there is enough place for the canvas
 try:
-    c = Canvas(32, 16)
+    c: Canvas = Canvas(32, 16)
 except Exception as e:
     print(e)
     Canvas.quit()
@@ -78,7 +77,7 @@ def retreat(self: Canvas):
 
 # Setting up the listeners
 # Using both the arrow keys and WASD
-def setup(self: Canvas):
+def setup(self: Canvas) -> None:
     self.fps = 4
 
     self.on_click('a', move_left)
