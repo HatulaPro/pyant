@@ -14,6 +14,15 @@ class Square(Enum):
     NOUGHT = auto()
     CROSS = auto()
 
+    @staticmethod
+    def to_char(square: 'Square') -> str:
+        if square == Square.EMPTY:
+            return ' '
+        if square == Square.CROSS:
+            return 'X'
+        if square == Square.NOUGHT:
+            return 'O'
+
 
 BOARD = 0
 TURN = 1
@@ -118,6 +127,7 @@ class Colors:
     RED = Pixel.hex_to_xterm_color(0xdd1234)
     WHITE = Pixel.empty_color()
     YELLOW = Pixel.hex_to_xterm_color(0xffff12)
+    GRAY = Pixel.hex_to_xterm_color(0xcacaca)
 
 
 def draw(self: Canvas) -> None:
@@ -145,15 +155,14 @@ def draw(self: Canvas) -> None:
     for i in range(3):
         self.get_pixel(1, pixel_to_board_y(i)).character = chr(i + ord('a'))
 
-    self.set_pixel(pos_x - 1, pos_y, Pixel('[', Colors.RED, Colors.WHITE))
-    self.set_pixel(pos_x + 1, pos_y, Pixel(']', Colors.RED, Colors.WHITE))
-
     for i in range(3):
         for j in range(3):
-            if board[j][i] == Square.CROSS:
-                self.get_pixel(pixel_to_board_x(i), pixel_to_board_y(j)).character = 'X'
-            elif board[j][i] == Square.NOUGHT:
-                self.get_pixel(pixel_to_board_x(i), pixel_to_board_y(j)).character = 'O'
+            self.get_pixel(pixel_to_board_x(i), pixel_to_board_y(j)).character = Square.to_char(board[j][i])
+
+    self.set_pixel(pos_x - 1, pos_y, Pixel('[', Colors.RED, Colors.WHITE))
+    self.set_pixel(pos_x + 1, pos_y, Pixel(']', Colors.RED, Colors.WHITE))
+    if board[pos[1]][pos[0]] == Square.EMPTY:
+        self.set_pixel(pos_x, pos_y, Pixel(Square.to_char(self.vars[TURN]), Colors.GRAY, Colors.WHITE))
 
     if self.vars[WINNING_SQUARES] != None:
         winner = Square.EMPTY
