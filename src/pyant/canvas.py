@@ -2,6 +2,7 @@ import os
 import sys
 import threading
 import time
+from typing import Callable
 from pyant.input import Keys, getch, reset_terminal
 from pyant.pixel import Pixel
 
@@ -103,6 +104,12 @@ class Canvas:
         if self._clear_on_finish:
             Canvas._restore_cursor_position()
         self._done = True
+
+    def play(self, setup: Callable, draw: Callable) -> None:
+        setup(self)
+        while not self._done:
+            draw(self)
+            self.draw()
 
     @staticmethod
     def quit():

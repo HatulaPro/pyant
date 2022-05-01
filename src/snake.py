@@ -1,39 +1,12 @@
 #!/usr/bin/env python3
 import random
-from pyant import Canvas, Pixel
-from pyant import Keys
+from pyant import Canvas, Pixel, Keys
 
 UP = 0
 DOWN = 1
 LEFT = 2
 RIGHT = 3
 
-# Making sure there is enough place for the canvas
-try:
-    c = Canvas(32, 16)
-except Exception as e:
-    print(e)
-    Canvas.quit()
-c.fps = 4
-
-# Initial snake state
-snake = [[1, 1], [1, 2], [1, 3]]
-treat = [0, 0]
-score = -1
-
-
-def retreat():
-    '''
-    A Function to be called anytime we create the treat
-    '''
-    global treat
-    global score
-    score += 1
-    treat[0] = random.randint(0, c.width / 2 - 1)
-    treat[1] = random.randint(0, c.height - 1)
-
-
-retreat()
 moving_direction = RIGHT
 lock_changes = False
 
@@ -80,21 +53,53 @@ def move_down(c: Canvas):
         moving_direction = DOWN
 
 
+# Global variables
+snake = []
+treat = [0, 0]
+score = -1
+
+# Making sure there is enough place for the canvas
+try:
+    c = Canvas(32, 16)
+except Exception as e:
+    print(e)
+    Canvas.quit()
+
+
+def retreat():
+    '''
+    A Function to be called anytime we create the treat
+    '''
+    global treat
+    global score
+    score += 1
+    treat[0] = random.randint(0, c.width / 2 - 1)
+    treat[1] = random.randint(0, c.height - 1)
+
+
 # Setting up the listeners
 # Using both the arrow keys and WASD
-c.on_click('a', move_left)
-c.on_click(Keys.LEFT_KEY, move_left)
-c.on_click('s', move_down)
-c.on_click(Keys.DOWN_KEY, move_down)
-c.on_click('w', move_up)
-c.on_click(Keys.UP_KEY, move_up)
-c.on_click('d', move_right)
-c.on_click(Keys.RIGHT_KEY, move_right)
+def setup(self: Canvas):
+    global snake
+    self.fps = 4
+
+    self.on_click('a', move_left)
+    self.on_click(Keys.LEFT_KEY, move_left)
+    self.on_click('s', move_down)
+    self.on_click(Keys.DOWN_KEY, move_down)
+    self.on_click('w', move_up)
+    self.on_click(Keys.UP_KEY, move_up)
+    self.on_click('d', move_right)
+    self.on_click(Keys.RIGHT_KEY, move_right)
+    # Initial snake state
+    snake = [[1, 1], [1, 2], [1, 3]]
+    retreat()
 
 
-while not c._done:
+def draw(self: Canvas):
+    global lock_changes
     # Recoloring the background every frame
-    c.set_all_pixels(Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0x40ff60)))
+    self.set_all_pixels(Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0x40ff60)))
     head = snake[-1]
 
     head_x, head_y = head
@@ -122,15 +127,15 @@ while not c._done:
     snake[-1] = [new_head_x, new_head_y]
 
     # If snake is out of bounds
-    if new_head_x < 0 or new_head_x * 2 >= c.width or new_head_y < 0 or new_head_y >= c.height:
+    if new_head_x < 0 or new_head_x * 2 >= self.width or new_head_y < 0 or new_head_y >= self.height:
         print('GG loser')
         Canvas.quit()
 
     # Putting the snake's pixels on the canvas
     for [x, y] in snake[:-1]:
-        c.set_pixel(x, y, Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xf5e642)), square_mode=True)
+        self.set_pixel(x, y, Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xf5e642)), square_mode=True)
     # A special treatment for the head
-    c.set_pixel(new_head_x, new_head_y, Pixel('^', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xffae21)), square_mode=True)
+    self.set_pixel(new_head_x, new_head_y, Pixel('^', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xffae21)), square_mode=True)
 
     # If the head of the snake is on the treat
     if new_head_x == treat[0] and new_head_y == treat[1]:
@@ -139,10 +144,12 @@ while not c._done:
         retreat()
     else:
         # Show the treat if it wasn't eaten
-        c.set_pixel(treat[0], treat[1], Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xff0000)), square_mode=True)
+        self.set_pixel(treat[0], treat[1], Pixel(' ', Pixel.empty_color(), Pixel.hex_to_xterm_color(0xff0000)), square_mode=True)
     lock_changes = False
 
     # Showing the score at the center
     title = f'score: {score}'
-    c.text(title, int((c.width - len(title)) / 2), 0, foreground=Pixel.hex_to_xterm_color(0x000000))
-    c.draw()
+    self.text(title, int((self.width - len(title)) / 2), 0, foreground=Pixel.hex_to_xterm_color(0x000000))
+
+
+c.play(setup, draw)
